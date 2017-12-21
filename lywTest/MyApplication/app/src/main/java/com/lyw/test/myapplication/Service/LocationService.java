@@ -12,7 +12,7 @@ import com.lyw.test.myapplication.utils.LocationManager;
  * created on: 2017/12/14 10:11
  * description:
  */
-public class TesstService extends Service {
+public class LocationService extends Service {
 
     @Override
     public void onCreate() {
@@ -44,5 +44,4 @@ public class TesstService extends Service {
 //        };
 //        time.schedule(task,1000);
 //    }
-
 }

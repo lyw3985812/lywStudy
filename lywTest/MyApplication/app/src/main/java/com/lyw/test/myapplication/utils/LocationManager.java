@@ -16,12 +16,18 @@ import com.lyw.test.myapplication.core.MyApplication;
  */
 public class LocationManager {
     private static LocationManager mInstance;
+    private BDLocation mLocation;
     public LocationClient mLocationClient = null;
+
+    /**
+     * 定位监听
+     */
     private BDLocationListener myListener = new BDLocationListener() {
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
-            Log.i("TesstService", "定位返回马:" + bdLocation.getLocType());
-            sendBroadCastReceiver(bdLocation.getAddrStr());
+            Log.i("LocationService", "定位返回马:" + bdLocation.getLocType());
+            sendBroadCastReceiver();
+            mLocation = bdLocation;
             mLocationClient.stop();
         }
     };
@@ -49,7 +55,7 @@ public class LocationManager {
         mLocationClient = new LocationClient(MyApplication.getInstance());
         //声明LocationClient类
         mLocationClient.registerLocationListener(myListener);
-        option.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+        option.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
         //可选，设置定位模式，默认高精度
         //LocationMode.Hight_Accuracy：高精度；
         //LocationMode. Battery_Saving：低功耗；
@@ -96,14 +102,17 @@ public class LocationManager {
 
     public void startLocation() {
         mLocationClient.start();
-        Log.i("TesstService", "开始定位");
+        Log.i("LocationService", "开始定位");
     }
 
-    private void sendBroadCastReceiver(String text) {
+    private void sendBroadCastReceiver() {
         Intent intent = new Intent();
         intent.setAction("LocationManager");
-        intent.putExtra("LocationManager", text);
         MyApplication.getInstance().sendBroadcast(intent);
-        Log.i("TesstService", "发送定位广播");
+        Log.i("LocationService", "发送定位广播");
+    }
+
+    public BDLocation getLocation() {
+        return mLocation;
     }
 }

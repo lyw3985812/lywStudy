@@ -1,7 +1,5 @@
 package com.lyw.test.myapplication;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,12 +12,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.lyw.test.myapplication.Service.TesstService;
+import com.lyw.test.myapplication.Service.LocationService;
+import com.lyw.test.myapplication.core.MyApplication;
 import com.lyw.test.myapplication.utils.DateUtils;
+import com.lyw.test.myapplication.utils.LocationManager;
 import com.lyw.test.myapplication.utils.NetWorkUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import com.lyw.test.myapplication.utils.ServiceAlarmManager;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView mTvLogcat;
@@ -28,15 +26,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (action.equals("TesstService")) {
+            if (action.equals("LocationService")) {
                 StringBuffer buffer = new StringBuffer();
                 buffer.append(mTvLogcat.getText());
-                buffer.append(intent.getStringExtra("TesstService"));
+                buffer.append(intent.getStringExtra("LocationService"));
                 mTvLogcat.setText(buffer);
-            }
-            if (action.equals("LocationManager")) {
-                Log.i("TesstService", "接受定位广播");
-                String str = intent.getStringExtra("LocationManager");
+            } else if (action.equals("LocationManager")) {
+                Log.i("LocationService", "接受定位广播");
+                String str = LocationManager.getInstance().getLocation().getAddrStr();
                 shake(str);
             }
         }
@@ -47,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         initview();
         regiserReceiver();
-        awakenService();
+        Intent intent = new Intent(MyApplication.getInstance(), LocationService.class);
+        ServiceAlarmManager.getInstance().awakenService(intent);
     }
 
     @Override
@@ -64,19 +62,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void regiserReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("TesstService");
+        intentFilter.addAction("LocationService");
         intentFilter.addAction("LocationManager");
         registerReceiver(receiver, intentFilter);
-    }
-
-    private void awakenService() {
-        Intent intent = new Intent(this, TesstService.class);
-        PendingIntent pi = PendingIntent.getService(this, 1, intent, 0);
-        AlarmManager alarm = (AlarmManager) getSystemService(Service.ALARM_SERVICE);
-        if (alarm != null) {
-            // 最少60秒一次
-            alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000, 60000, pi);
-        }
     }
 
     private void shake(String address) {
@@ -86,10 +74,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         stringBuffer.append("\n" + DateUtils.getCurrentStr() + ":");
         stringBuffer.append(" " + address);
         if (NetWorkUtils.isNetworkAvailable(this)) {
-            Log.i("TesstService", "网络可用");
+            Log.i("LocationService", "网络可用");
             stringBuffer.append("网络可用");
         } else {
-            Log.i("TesstService", "网络不可用");
+            Log.i("LocationService", "网络不可用");
             stringBuffer.append("网络不可用");
         }
         sendBroadCastReceiver(stringBuffer.toString());
@@ -97,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void sendBroadCastReceiver(String text) {
         Intent intent = new Intent();
-        intent.setAction("TesstService");
-        intent.putExtra("TesstService", text);
+        intent.setAction("LocationService");
+        intent.putExtra("LocationService", text);
         getApplication().sendBroadcast(intent);
     }
 
@@ -106,15 +94,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button:
-                Timer time = new Timer();
-                TimerTask timerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(MainActivity.this, TesstService.class);
-                        startService(intent);
-                    }
-                };
-                time.schedule(timerTask, 1000, 10000);
+//                Timer time = new Timer();
+//                TimerTask timerTask = new TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        Intent intent = new Intent(MainActivity.this, LocationService.class);
+//                        startService(intent);
+//                    }
+//                };
+//                time.schedule(timerTask, 1000, 10000);
+                ServiceAlarmManager.getInstance().awakenCancel();
                 break;
         }
     }
