@@ -11,6 +11,9 @@ import android.view.View;
 
 import com.diyview.lyw.diyview.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Administrator on 2018/1/15 0015.
  */
@@ -22,6 +25,8 @@ public class RectView extends View {
     public RectView(Context context) {
         this(context, null);
     }
+
+
 
     public RectView(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
