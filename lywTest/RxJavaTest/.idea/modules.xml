@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/RxJavaTest.iml" filepath="$PROJECT_DIR$/RxJavaTest.iml" />
+      <module fileurl="file://D:\study\Android\myhomework\git\lywTest\RxJavaTest\RxJavaTest.iml" filepath="D:\study\Android\myhomework\git\lywTest\RxJavaTest\RxJavaTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://D:\study\Android\myhomework\git\lywTest\RxJavaTest\app\app.iml" filepath="D:\study\Android\myhomework\git\lywTest\RxJavaTest\app\app.iml" />
     </modules>
   </component>
 </project>
